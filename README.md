@@ -8,6 +8,10 @@ La documentación completa del proyecto, incluyendo la arquitectura del sistema 
 
 [**📘 Ver Documentación del Proyecto**](https://AndoniXXR.github.io/Nuttx_ESP32/)
 
+También puedes consultar la documentación offline en formato PDF:
+
+[**📄 Descargar Documentación en PDF**](docs/nuttxesp32lab01.pdf)
+
 ## Descripción
 
 El objetivo principal de este proyecto es establecer comunicación de red (TCP/UDP) entre un ESP32 corriendo NuttX y una PC. El proyecto incluye tanto el código fuente del sistema operativo NuttX y sus aplicaciones, como el código del lado del PC para realizar las pruebas de comunicación.
