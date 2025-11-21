@@ -25,6 +25,49 @@ Características Implementadas
 3.  **Comando EXIT**: Se implementó un mecanismo de cierre limpio. Si el cliente envía la cadena ``EXIT``, el servidor cierra la conexión actual (en TCP) o termina su ejecución (si así se desea), y el cliente termina su proceso.
 4.  **Logging**: Ambas partes (Cliente y Servidor) registran en consola los mensajes enviados y recibidos con marcas de tiempo.
 
+Configuración del Sistema y Entorno
+===================================
+
+Configuración de NuttX
+----------------------
+Para lograr la funcionalidad requerida, se realizaron modificaciones específicas en la configuración del kernel de NuttX (`defconfig`) y en el sistema de construcción.
+
+**Características Habilitadas:**
+
+*   **Networking (TCP/IP)**: Se habilitó la pila de red completa (IPv4), soporte para sockets TCP y UDP, y controladores para la interfaz Ethernet/Wi-Fi del ESP32.
+*   **NuttShell (NSH)**: Se habilitó la consola interactiva del sistema, permitiendo la ejecución de comandos y scripts.
+*   **Comandos del Sistema**: Se incluyeron utilidades esenciales para la gestión y diagnóstico:
+    *   ``ifconfig``: Gestión de interfaces de red (configuración de IP, máscara, gateway).
+    *   ``ping``: Diagnóstico de conectividad ICMP.
+    *   ``ls``, ``ps``, ``free``: Gestión de archivos y procesos.
+    *   ``reboot``: Reinicio del sistema.
+    *   ``date``: Gestión de fecha y hora del sistema.
+*   **Aplicaciones de Usuario**: Se registró la aplicación ``lab01`` en el sistema de construcción (`apps/examples/lab01`), haciéndola accesible directamente desde la línea de comandos de NSH.
+
+Configuración del Host (PC Gateway)
+-----------------------------------
+Para probar la conectividad en un entorno controlado, el PC se configura como un Gateway/Router, proporcionando servicios de red al ESP32.
+
+**Herramientas Utilizadas:**
+
+*   **Python 3**: Para ejecutar el script de configuración y el servidor DHCP simple.
+*   **iptables**: Para configurar NAT (Network Address Translation) y permitir que el ESP32 acceda a redes externas a través del PC.
+*   **iproute2 (ip)**: Para la configuración de direcciones IP y enlaces en Linux.
+
+**Scripts de Configuración:**
+
+El repositorio incluye scripts para automatizar esta tarea:
+
+1.  **setup_gateway.py**: Script principal en Python.
+    *   Configura la IP estática en la interfaz LAN del PC (ej. ``192.168.50.1``).
+    *   Habilita el reenvío de paquetes (IP Forwarding) en el kernel de Linux.
+    *   Configura reglas de ``iptables`` para enmascarar el tráfico (NAT) saliente por la interfaz WAN.
+    *   Ejecuta un servidor DHCP básico para asignar automáticamente una IP al ESP32 (ej. ``192.168.50.2``).
+
+    *Uso:* ``sudo python3 setup_gateway.py <INTERFAZ_WAN> <INTERFAZ_LAN>``
+
+2.  **setup_network.sh**: Alternativa en Bash para configuración manual de red y NAT.
+
 Guía de Uso
 -----------
 

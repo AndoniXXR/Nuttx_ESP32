@@ -45,10 +45,27 @@
               <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">Documentación del Proyecto NuttX ESP32 Lab01</a><ul>
 <li><a class="reference internal" href="#introduccion">Introducción</a></li>
-<li><a class="reference internal" href="#componentes-del-sistema">Componentes del Sistema</a></li>
+<li><a class="reference internal" href="#descripcion-del-proyecto">Descripción del Proyecto</a></li>
+<li><a class="reference internal" href="#caracteristicas-implementadas">Características Implementadas</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#documentacion-de-la-api">Documentación de la API</a><ul>
+<li><a class="reference internal" href="#configuracion-del-sistema-y-entorno">Configuración del Sistema y Entorno</a><ul>
+<li><a class="reference internal" href="#configuracion-de-nuttx">Configuración de NuttX</a></li>
+<li><a class="reference internal" href="#configuracion-del-host-pc-gateway">Configuración del Host (PC Gateway)</a></li>
+<li><a class="reference internal" href="#guia-de-uso">Guía de Uso</a><ul>
+<li><a class="reference internal" href="#comandos-en-esp32-nuttshell">Comandos en ESP32 (NuttShell)</a></li>
+<li><a class="reference internal" href="#comandos-en-pc-linux">Comandos en PC (Linux)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#detalles-de-implementacion">Detalles de Implementación</a><ul>
+<li><a class="reference internal" href="#estructura-de-argumentos">Estructura de Argumentos</a></li>
+<li><a class="reference internal" href="#logica-del-servidor">Lógica del Servidor</a></li>
+<li><a class="reference internal" href="#logica-del-cliente">Lógica del Cliente</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#documentacion-de-la-api-codigo-fuente">Documentación de la API (Código Fuente)</a><ul>
 <li><a class="reference internal" href="#aplicacion-pc-lab01-pc-c">Aplicación PC (lab01_pc.c)</a><ul>
 <li><a class="reference internal" href="#c.BUFFER_SIZE"><code class="docutils literal notranslate"><span class="pre">BUFFER_SIZE</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv413get_timestampPc6size_t"><code class="docutils literal notranslate"><span class="pre">get_timestamp()</span></code></a></li>
@@ -105,17 +122,141 @@
 <p>Esta es la documentación técnica generada automáticamente para el proyecto de portabilidad de Laboratorio 01 a NuttX en ESP32.
 El proyecto consiste en una aplicación cliente/servidor TCP/UDP que se ejecuta en el microcontrolador ESP32 y se comunica con una contraparte en PC.</p>
 </section>
-<section id="componentes-del-sistema">
-<h2>Componentes del Sistema<a class="headerlink" href="#componentes-del-sistema" title="Link to this heading"></a></h2>
-<p>El sistema se divide en dos componentes principales:</p>
+<section id="descripcion-del-proyecto">
+<h2>Descripción del Proyecto<a class="headerlink" href="#descripcion-del-proyecto" title="Link to this heading"></a></h2>
+<p>El objetivo de este laboratorio es demostrar la capacidad del sistema operativo NuttX ejecutándose en un SoC ESP32 para manejar comunicaciones de red estándar (TCP/IP).</p>
+<p>Se ha implementado una aplicación llamada <code class="docutils literal notranslate"><span class="pre">lab01</span></code> que puede funcionar en dos modos:
+*   <strong>Modo Servidor</strong>: Escucha peticiones de cálculo matemático simple (suma, resta, multiplicación, división, módulo) y devuelve el resultado.
+*   <strong>Modo Cliente</strong>: Permite al usuario ingresar operaciones matemáticas y enviarlas a un servidor remoto.</p>
+</section>
+<section id="caracteristicas-implementadas">
+<h2>Características Implementadas<a class="headerlink" href="#caracteristicas-implementadas" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
-<li><p><strong>Aplicación ESP32 (NuttX)</strong>: Código que corre en el microcontrolador.</p></li>
-<li><p><strong>Aplicación PC (Linux)</strong>: Código de prueba que corre en el ordenador.</p></li>
+<li><p><strong>Soporte Dual TCP/UDP</strong>: La aplicación puede configurarse en tiempo de ejecución para usar cualquiera de los dos protocolos de transporte.</p></li>
+<li><p><strong>Calculadora Remota</strong>: El protocolo de aplicación es texto plano simple. El cliente envía una operación (ej. <code class="docutils literal notranslate"><span class="pre">5+3</span></code>) y el servidor responde con el resultado (ej. <code class="docutils literal notranslate"><span class="pre">8</span></code>).</p></li>
+<li><p><strong>Comando EXIT</strong>: Se implementó un mecanismo de cierre limpio. Si el cliente envía la cadena <code class="docutils literal notranslate"><span class="pre">EXIT</span></code>, el servidor cierra la conexión actual (en TCP) o termina su ejecución (si así se desea), y el cliente termina su proceso.</p></li>
+<li><p><strong>Logging</strong>: Ambas partes (Cliente y Servidor) registran en consola los mensajes enviados y recibidos con marcas de tiempo.</p></li>
 </ol>
 </section>
 </section>
-<section id="documentacion-de-la-api">
-<h1>Documentación de la API<a class="headerlink" href="#documentacion-de-la-api" title="Link to this heading"></a></h1>
+<section id="configuracion-del-sistema-y-entorno">
+<h1>Configuración del Sistema y Entorno<a class="headerlink" href="#configuracion-del-sistema-y-entorno" title="Link to this heading"></a></h1>
+<section id="configuracion-de-nuttx">
+<h2>Configuración de NuttX<a class="headerlink" href="#configuracion-de-nuttx" title="Link to this heading"></a></h2>
+<p>Para lograr la funcionalidad requerida, se realizaron modificaciones específicas en la configuración del kernel de NuttX (<cite>defconfig</cite>) y en el sistema de construcción.</p>
+<p><strong>Características Habilitadas:</strong></p>
+<ul class="simple">
+<li><p><strong>Networking (TCP/IP)</strong>: Se habilitó la pila de red completa (IPv4), soporte para sockets TCP y UDP, y controladores para la interfaz Ethernet/Wi-Fi del ESP32.</p></li>
+<li><p><strong>NuttShell (NSH)</strong>: Se habilitó la consola interactiva del sistema, permitiendo la ejecución de comandos y scripts.</p></li>
+<li><p><strong>Comandos del Sistema</strong>: Se incluyeron utilidades esenciales para la gestión y diagnóstico:
+*   <code class="docutils literal notranslate"><span class="pre">ifconfig</span></code>: Gestión de interfaces de red (configuración de IP, máscara, gateway).
+*   <code class="docutils literal notranslate"><span class="pre">ping</span></code>: Diagnóstico de conectividad ICMP.
+*   <code class="docutils literal notranslate"><span class="pre">ls</span></code>, <code class="docutils literal notranslate"><span class="pre">ps</span></code>, <code class="docutils literal notranslate"><span class="pre">free</span></code>: Gestión de archivos y procesos.
+*   <code class="docutils literal notranslate"><span class="pre">reboot</span></code>: Reinicio del sistema.
+*   <code class="docutils literal notranslate"><span class="pre">date</span></code>: Gestión de fecha y hora del sistema.</p></li>
+<li><p><strong>Aplicaciones de Usuario</strong>: Se registró la aplicación <code class="docutils literal notranslate"><span class="pre">lab01</span></code> en el sistema de construcción (<cite>apps/examples/lab01</cite>), haciéndola accesible directamente desde la línea de comandos de NSH.</p></li>
+</ul>
+</section>
+<section id="configuracion-del-host-pc-gateway">
+<h2>Configuración del Host (PC Gateway)<a class="headerlink" href="#configuracion-del-host-pc-gateway" title="Link to this heading"></a></h2>
+<p>Para probar la conectividad en un entorno controlado, el PC se configura como un Gateway/Router, proporcionando servicios de red al ESP32.</p>
+<p><strong>Herramientas Utilizadas:</strong></p>
+<ul class="simple">
+<li><p><strong>Python 3</strong>: Para ejecutar el script de configuración y el servidor DHCP simple.</p></li>
+<li><p><strong>iptables</strong>: Para configurar NAT (Network Address Translation) y permitir que el ESP32 acceda a redes externas a través del PC.</p></li>
+<li><p><strong>iproute2 (ip)</strong>: Para la configuración de direcciones IP y enlaces en Linux.</p></li>
+</ul>
+<p><strong>Scripts de Configuración:</strong></p>
+<p>El repositorio incluye scripts para automatizar esta tarea:</p>
+<ol class="arabic">
+<li><p><strong>setup_gateway.py</strong>: Script principal en Python.
+*   Configura la IP estática en la interfaz LAN del PC (ej. <code class="docutils literal notranslate"><span class="pre">192.168.50.1</span></code>).
+*   Habilita el reenvío de paquetes (IP Forwarding) en el kernel de Linux.
+*   Configura reglas de <code class="docutils literal notranslate"><span class="pre">iptables</span></code> para enmascarar el tráfico (NAT) saliente por la interfaz WAN.
+*   Ejecuta un servidor DHCP básico para asignar automáticamente una IP al ESP32 (ej. <code class="docutils literal notranslate"><span class="pre">192.168.50.2</span></code>).</p>
+<p><em>Uso:</em> <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">python3</span> <span class="pre">setup_gateway.py</span> <span class="pre">&lt;INTERFAZ_WAN&gt;</span> <span class="pre">&lt;INTERFAZ_LAN&gt;</span></code></p>
+</li>
+<li><p><strong>setup_network.sh</strong>: Alternativa en Bash para configuración manual de red y NAT.</p></li>
+</ol>
+</section>
+<section id="guia-de-uso">
+<h2>Guía de Uso<a class="headerlink" href="#guia-de-uso" title="Link to this heading"></a></h2>
+<section id="comandos-en-esp32-nuttshell">
+<h3>Comandos en ESP32 (NuttShell)<a class="headerlink" href="#comandos-en-esp32-nuttshell" title="Link to this heading"></a></h3>
+<p>Una vez que el sistema NuttX ha arrancado y tienes acceso a la consola NSH a través del puerto serie:</p>
+<ol class="arabic">
+<li><p><strong>Verificar Red</strong>: Asegúrate de tener IP.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nsh&gt;<span class="w"> </span>ifconfig
+</pre></div>
+</div>
+</li>
+<li><p><strong>Ejecutar como Servidor</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Iniciar servidor TCP en puerto 3001</span>
+nsh&gt;<span class="w"> </span>lab01<span class="w"> </span>server<span class="w"> </span>tcp<span class="w"> </span><span class="m">3001</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Ejecutar como Cliente</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Conectar a un servidor en PC (ej. 192.168.1.50)</span>
+nsh&gt;<span class="w"> </span>lab01<span class="w"> </span>client<span class="w"> </span>tcp<span class="w"> </span><span class="m">3001</span><span class="w"> </span><span class="m">192</span>.168.1.50
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="comandos-en-pc-linux">
+<h3>Comandos en PC (Linux)<a class="headerlink" href="#comandos-en-pc-linux" title="Link to this heading"></a></h3>
+<p>Primero compila la aplicación de contraparte:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gcc<span class="w"> </span>lab01_pc.c<span class="w"> </span>-o<span class="w"> </span>lab01_pc
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p><strong>Ejecutar como Servidor</strong> (para probar el Cliente ESP32):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./lab01_pc<span class="w"> </span>server<span class="w"> </span>tcp<span class="w"> </span><span class="m">3001</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Ejecutar como Cliente</strong> (para probar el Servidor ESP32):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./lab01_pc<span class="w"> </span>client<span class="w"> </span>tcp<span class="w"> </span><span class="m">3001</span><span class="w"> </span>&lt;IP_DEL_ESP32&gt;
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+</section>
+<section id="detalles-de-implementacion">
+<h1>Detalles de Implementación<a class="headerlink" href="#detalles-de-implementacion" title="Link to this heading"></a></h1>
+<section id="estructura-de-argumentos">
+<h2>Estructura de Argumentos<a class="headerlink" href="#estructura-de-argumentos" title="Link to this heading"></a></h2>
+<p>Tanto la aplicación de NuttX como la de PC utilizan una estructura común para manejar los argumentos de línea de comandos:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">args_s</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">protocol</span><span class="p">;</span><span class="w">  </span><span class="cm">/* &quot;TCP&quot; o &quot;UDP&quot; */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">server_ip</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Dirección IP del servidor */</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">port</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Puerto de escucha o conexión */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">mode</span><span class="p">;</span><span class="w">      </span><span class="cm">/* &quot;client&quot; o &quot;server&quot; */</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="logica-del-servidor">
+<h2>Lógica del Servidor<a class="headerlink" href="#logica-del-servidor" title="Link to this heading"></a></h2>
+<p>El servidor crea un socket (STREAM para TCP, DGRAM para UDP), lo vincula al puerto especificado y entra en un bucle infinito.
+*   En <strong>TCP</strong>, acepta una conexión, procesa mensajes en un bucle interno hasta recibir <code class="docutils literal notranslate"><span class="pre">EXIT</span></code> o error, y luego cierra el socket cliente para volver a aceptar otro.
+*   En <strong>UDP</strong>, recibe paquetes individuales y responde a la dirección de origen.</p>
+</section>
+<section id="logica-del-cliente">
+<h2>Lógica del Cliente<a class="headerlink" href="#logica-del-cliente" title="Link to this heading"></a></h2>
+<p>El cliente lee entradas del usuario desde <code class="docutils literal notranslate"><span class="pre">stdin</span></code>.
+*   Envía la cadena ingresada al servidor.
+*   Espera la respuesta (bloqueante).
+*   Imprime la respuesta.
+*   Si el usuario escribe <code class="docutils literal notranslate"><span class="pre">EXIT</span></code>, envía el comando para notificar al servidor y termina la ejecución.</p>
+</section>
+</section>
+<section id="documentacion-de-la-api-codigo-fuente">
+<h1>Documentación de la API (Código Fuente)<a class="headerlink" href="#documentacion-de-la-api-codigo-fuente" title="Link to this heading"></a></h1>
 <section id="aplicacion-pc-lab01-pc-c">
 <h2>Aplicación PC (lab01_pc.c)<a class="headerlink" href="#aplicacion-pc-lab01-pc-c" title="Link to this heading"></a></h2>
 <p>Este archivo contiene la lógica para el cliente/servidor que se ejecuta en el host (Linux).</p>
@@ -173,7 +314,8 @@ El proyecto consiste en una aplicación cliente/servidor TCP/UDP que se ejecuta 
 </section>
 <section id="aplicacion-esp32-lab01-main-c">
 <h2>Aplicación ESP32 (lab01_main.c)<a class="headerlink" href="#aplicacion-esp32-lab01-main-c" title="Link to this heading"></a></h2>
-<p>Este archivo contiene la lógica principal de la aplicación NuttX.</p>
+<p>Este archivo contiene la lógica principal de la aplicación NuttX.
+Se registra como una aplicación del sistema en NuttX y se invoca desde NSH.</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
 <dl class="cpp macro">
