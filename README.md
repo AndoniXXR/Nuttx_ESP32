@@ -2,6 +2,12 @@
 
 Este repositorio contiene el port del "Laboratorio 01" para el sistema operativo en tiempo real NuttX ejecutándose en un microcontrolador ESP32.
 
+## Documentación
+
+La documentación completa del proyecto, incluyendo la arquitectura del sistema y la referencia de la API, está disponible en línea:
+
+[**📘 Ver Documentación del Proyecto**](https://AndoniXXR.github.io/Nuttx_ESP32/)
+
 ## Descripción
 
 El objetivo principal de este proyecto es establecer comunicación de red (TCP/UDP) entre un ESP32 corriendo NuttX y una PC. El proyecto incluye tanto el código fuente del sistema operativo NuttX y sus aplicaciones, como el código del lado del PC para realizar las pruebas de comunicación.
