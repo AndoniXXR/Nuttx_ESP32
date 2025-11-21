@@ -51,6 +51,31 @@ gcc lab01_pc.c -o lab01_pc
 *   **Modo**: `client` o `server`.
 *   **Protocolo**: `tcp` o `udp`.
 
+## Comandos Disponibles en NuttX (NSH)
+
+Una vez que el sistema arranca y accedes a la consola NSH (NuttShell) a través del puerto serie, puedes utilizar los siguientes comandos:
+
+### Comandos Generales del Sistema
+*   `help`: Muestra la lista completa de comandos disponibles y aplicaciones registradas.
+*   `ls`: Lista archivos y directorios.
+*   `ps`: Muestra los procesos en ejecución y su uso de memoria.
+*   `free`: Muestra el estado de la memoria (total, usada, libre).
+*   `reboot`: Reinicia el sistema.
+
+### Comandos de Red
+*   `ifconfig`: Muestra o configura las interfaces de red (dirección IP, máscara, gateway).
+*   `ping <ip>`: Verifica la conectividad con otro host en la red.
+*   `renew <interfaz>`: Renueva la dirección IP si se usa DHCP.
+
+### Comando de la Aplicación (Laboratorio 01)
+*   `lab01 <client|server> <tcp|udp> <puerto> [ip_servidor]`
+    *   **Descripción**: Inicia la aplicación principal del laboratorio en modo cliente o servidor.
+    *   **Ejemplos**:
+        *   Iniciar servidor TCP en puerto 3001:
+            `nsh> lab01 server tcp 3001`
+        *   Iniciar cliente TCP conectando a 192.168.1.50:
+            `nsh> lab01 client tcp 3001 192.168.1.50`
+
 ## Notas Importantes
 
 *   Este repositorio ha sido optimizado para excluir archivos de historial de git excesivamente grandes, asegurando una descarga ligera y funcional.
