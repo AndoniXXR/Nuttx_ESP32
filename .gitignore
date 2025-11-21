@@ -2,3 +2,9 @@
 *.txt
 *.log
 .git_backup
+venv_docs/
+*.o
+*.a
+*.bin
+*.elf
+docs/doxygen/xml/

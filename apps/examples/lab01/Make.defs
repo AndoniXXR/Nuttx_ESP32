@@ -1,0 +1,3 @@
+ifneq ($(CONFIG_EXAMPLES_LAB01),)
+CONFIGURED_APPS += $(APPDIR)/examples/lab01
+endif

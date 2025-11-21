@@ -1,0 +1,14 @@
+PROJECT_NAME           = "NuttX ESP32 Lab01"
+PROJECT_NUMBER         = "1.0"
+OUTPUT_DIRECTORY       = docs/doxygen
+INPUT                  = apps/examples/lab01 lab01_pc.c
+RECURSIVE              = YES
+OUTPUT_LANGUAGE        = Spanish
+GENERATE_XML           = YES
+GENERATE_HTML          = NO
+GENERATE_LATEX         = NO
+XML_OUTPUT             = xml
+OPTIMIZE_OUTPUT_FOR_C  = YES
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES

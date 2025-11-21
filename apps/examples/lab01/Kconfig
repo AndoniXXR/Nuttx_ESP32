@@ -1,0 +1,5 @@
+config EXAMPLES_LAB01
+    tristate "Laboratorio 01 (Client/Server)"
+    default n
+    ---help---
+        Enable the Laboratorio 01 client/server application.
