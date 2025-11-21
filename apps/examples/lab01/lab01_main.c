@@ -1,22 +1,14 @@
-/****************************************************************************
- * examples/lab01/lab01_main.c
+/**
+ * @file lab01_main.c
+ * @brief Aplicación principal para NuttX (ESP32) del Laboratorio 01.
  *
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to you under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Este programa implementa un cliente/servidor TCP/UDP que corre sobre NuttX.
+ * Permite realizar operaciones matemáticas simples enviadas desde un cliente
+ * o procesarlas si actúa como servidor.
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ****************************************************************************/
+ * @author AndoniXXR
+ * @date 2025
+ */
 
 /****************************************************************************
  * Included Files
@@ -36,24 +28,35 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
+/** @brief Tamaño del buffer para envío y recepción de mensajes. */
 #define BUFFER_SIZE 1024
 
 /****************************************************************************
  * Private Types
  ****************************************************************************/
 
+/**
+ * @struct args_s
+ * @brief Estructura para almacenar los argumentos de línea de comandos en NuttX.
+ */
 struct args_s
 {
-  char *protocol;
-  char *server_ip;
-  int port;
-  char *mode; /* "client" or "server" */
+  char *protocol;  /**< Protocolo a utilizar: "TCP" o "UDP". */
+  char *server_ip; /**< Dirección IP del servidor al que conectarse (modo cliente). */
+  int port;        /**< Puerto de conexión o escucha. */
+  char *mode;      /**< Modo de operación: "client" o "server". */
 };
 
 /****************************************************************************
  * Private Functions
  ****************************************************************************/
 
+/**
+ * @brief Obtiene la fecha y hora actual formateada.
+ *
+ * @param buffer Buffer donde se escribirá la cadena de tiempo.
+ * @param size Tamaño del buffer.
+ */
 static void get_timestamp(char *buffer, size_t size)
 {
   time_t now;
@@ -65,6 +68,15 @@ static void get_timestamp(char *buffer, size_t size)
   strftime(buffer, size, "%Y/%m/%d %H:%M:%S", tm_info);
 }
 
+/**
+ * @brief Imprime un mensaje de log con marca de tiempo en la consola (NSH).
+ *
+ * @param direction Dirección del mensaje (">" enviado, "<" recibido).
+ * @param host Host remoto o local.
+ * @param socket_type Tipo de socket ("client" o "server").
+ * @param protocol Protocolo usado ("TCP" o "UDP").
+ * @param description Contenido del mensaje o descripción del evento.
+ */
 static void log_msg(const char *direction, const char *host, const char *socket_type,
                     const char *protocol, const char *description)
 {
@@ -73,6 +85,14 @@ static void log_msg(const char *direction, const char *host, const char *socket_
   printf("%s %s %s [%s] %s: %s\n", direction, host, socket_type, timestamp, protocol, description);
 }
 
+/**
+ * @brief Parsea los argumentos de la línea de comandos de NuttX.
+ *
+ * @param argc Número de argumentos.
+ * @param argv Array de argumentos.
+ * @param args Puntero a la estructura donde se guardarán los resultados.
+ * @return 0 si tiene éxito, -1 si faltan argumentos obligatorios.
+ */
 static int parse_args(int argc, char *argv[], struct args_s *args)
 {
   int i;
@@ -109,6 +129,12 @@ static int parse_args(int argc, char *argv[], struct args_s *args)
   return 0;
 }
 
+/**
+ * @brief Realiza una operación matemática básica.
+ *
+ * @param input Cadena de entrada (ej. "5+3").
+ * @param output Buffer donde se escribirá el resultado.
+ */
 static void calculate(const char *input, char *output)
 {
   int a, b;
@@ -149,6 +175,12 @@ static void calculate(const char *input, char *output)
   sprintf(output, "%d", res);
 }
 
+/**
+ * @brief Ejecuta la lógica del cliente en NuttX.
+ *
+ * @param args Argumentos de configuración.
+ * @return 0 en éxito, 1 en error.
+ */
 static int run_client(struct args_s *args)
 {
   int sock;
@@ -252,6 +284,12 @@ static int run_client(struct args_s *args)
   return 0;
 }
 
+/**
+ * @brief Ejecuta la lógica del servidor en NuttX.
+ *
+ * @param args Argumentos de configuración.
+ * @return 0 en éxito, 1 en error.
+ */
 static int run_server(struct args_s *args)
 {
   int server_sock, client_sock;
@@ -396,6 +434,13 @@ static int run_server(struct args_s *args)
  * Public Functions
  ****************************************************************************/
 
+/**
+ * @brief Punto de entrada principal de la aplicación NuttX.
+ *
+ * @param argc Número de argumentos.
+ * @param argv Array de argumentos.
+ * @return 0 en éxito, 1 en error.
+ */
 int main(int argc, FAR char *argv[])
 {
   struct args_s args;

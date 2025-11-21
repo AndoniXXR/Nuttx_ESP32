@@ -45,6 +45,9 @@
               <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">Documentación del Proyecto NuttX ESP32 Lab01</a><ul>
 <li><a class="reference internal" href="#introduccion">Introducción</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arquitectura-del-sistema">Arquitectura del Sistema</a><ul>
 <li><a class="reference internal" href="#descripcion-del-proyecto">Descripción del Proyecto</a></li>
 <li><a class="reference internal" href="#caracteristicas-implementadas">Características Implementadas</a></li>
 </ul>
@@ -59,30 +62,37 @@
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#detalles-de-implementacion">Detalles de Implementación</a><ul>
-<li><a class="reference internal" href="#estructura-de-argumentos">Estructura de Argumentos</a></li>
-<li><a class="reference internal" href="#logica-del-servidor">Lógica del Servidor</a></li>
-<li><a class="reference internal" href="#logica-del-cliente">Lógica del Cliente</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#solucion-de-problemas">Solución de Problemas</a></li>
 <li><a class="reference internal" href="#documentacion-de-la-api-codigo-fuente">Documentación de la API (Código Fuente)</a><ul>
 <li><a class="reference internal" href="#aplicacion-pc-lab01-pc-c">Aplicación PC (lab01_pc.c)</a><ul>
 <li><a class="reference internal" href="#c.BUFFER_SIZE"><code class="docutils literal notranslate"><span class="pre">BUFFER_SIZE</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv413get_timestampPc6size_t"><code class="docutils literal notranslate"><span class="pre">get_timestamp()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv47log_msgPKcPKcPKcPKcPKc"><code class="docutils literal notranslate"><span class="pre">log_msg()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv410parse_argsiA_PcP6args_s"><code class="docutils literal notranslate"><span class="pre">parse_args()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv410parse_argsiA_PcP9pc_args_s"><code class="docutils literal notranslate"><span class="pre">parse_args()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv49calculatePKcPc"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv410run_clientP6args_s"><code class="docutils literal notranslate"><span class="pre">run_client()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv410run_serverP6args_s"><code class="docutils literal notranslate"><span class="pre">run_server()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv410run_clientP9pc_args_s"><code class="docutils literal notranslate"><span class="pre">run_client()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv410run_serverP9pc_args_s"><code class="docutils literal notranslate"><span class="pre">run_server()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv44mainiA_Pc"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv46args_s"><code class="docutils literal notranslate"><span class="pre">args_s</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv49pc_args_s"><code class="docutils literal notranslate"><span class="pre">pc_args_s</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4N9pc_args_s8protocolE"><code class="docutils literal notranslate"><span class="pre">protocol</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9pc_args_s9server_ipE"><code class="docutils literal notranslate"><span class="pre">server_ip</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9pc_args_s4portE"><code class="docutils literal notranslate"><span class="pre">port</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9pc_args_s4modeE"><code class="docutils literal notranslate"><span class="pre">mode</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#aplicacion-esp32-lab01-main-c">Aplicación ESP32 (lab01_main.c)</a><ul>
+<li><a class="reference internal" href="#_CPPv410parse_argsiA_PcP6args_s"><code class="docutils literal notranslate"><span class="pre">parse_args()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv410run_clientP6args_s"><code class="docutils literal notranslate"><span class="pre">run_client()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv410run_serverP6args_s"><code class="docutils literal notranslate"><span class="pre">run_server()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv46args_s"><code class="docutils literal notranslate"><span class="pre">args_s</span></code></a><ul>
 <li><a class="reference internal" href="#_CPPv4N6args_s8protocolE"><code class="docutils literal notranslate"><span class="pre">protocol</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N6args_s9server_ipE"><code class="docutils literal notranslate"><span class="pre">server_ip</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N6args_s4portE"><code class="docutils literal notranslate"><span class="pre">port</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N6args_s4modeE"><code class="docutils literal notranslate"><span class="pre">mode</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -122,6 +132,27 @@
 <p>Esta es la documentación técnica generada automáticamente para el proyecto de portabilidad de Laboratorio 01 a NuttX en ESP32.
 El proyecto consiste en una aplicación cliente/servidor TCP/UDP que se ejecuta en el microcontrolador ESP32 y se comunica con una contraparte en PC.</p>
 </section>
+</section>
+<section id="arquitectura-del-sistema">
+<h1>Arquitectura del Sistema<a class="headerlink" href="#arquitectura-del-sistema" title="Link to this heading"></a></h1>
+<p>El sistema se compone de dos nodos principales que se comunican a través de una red TCP/IP.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>+-------------------+           (WiFi / Ethernet)           +-------------------+
+|   PC Host (Linux) | &lt;-----------------------------------&gt; |   ESP32 (NuttX)   |
+|                   |                                       |                   |
+|  [ lab01_pc ]     |           TCP/UDP Port 3001           |  [ lab01 app ]    |
+|  - Cliente        |                                       |  - Cliente        |
+|  - Servidor       |                                       |  - Servidor       |
+|                   |                                       |                   |
+|  [ Gateway ]      |                                       |  [ NSH Shell ]    |
+|  - DHCP Server    |                                       |  - ifconfig       |
+|  - NAT / Routing  |                                       |  - ping           |
++-------------------+                                       +-------------------+
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>PC Host</strong>: Actúa como la estación de desarrollo y también como Gateway de red. Ejecuta la versión Linux de la aplicación (<cite>lab01_pc</cite>) para pruebas de integración.</p></li>
+<li><p><strong>ESP32</strong>: Ejecuta el RTOS NuttX. La aplicación <cite>lab01</cite> está integrada en el sistema operativo y se lanza desde la consola NSH.</p></li>
+</ul>
 <section id="descripcion-del-proyecto">
 <h2>Descripción del Proyecto<a class="headerlink" href="#descripcion-del-proyecto" title="Link to this heading"></a></h2>
 <p>El objetivo de este laboratorio es demostrar la capacidad del sistema operativo NuttX ejecutándose en un SoC ESP32 para manejar comunicaciones de red estándar (TCP/IP).</p>
@@ -225,47 +256,41 @@ nsh&gt;<span class="w"> </span>lab01<span class="w"> </span>client<span class="w
 </section>
 </section>
 </section>
-<section id="detalles-de-implementacion">
-<h1>Detalles de Implementación<a class="headerlink" href="#detalles-de-implementacion" title="Link to this heading"></a></h1>
-<section id="estructura-de-argumentos">
-<h2>Estructura de Argumentos<a class="headerlink" href="#estructura-de-argumentos" title="Link to this heading"></a></h2>
-<p>Tanto la aplicación de NuttX como la de PC utilizan una estructura común para manejar los argumentos de línea de comandos:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">args_s</span>
-<span class="p">{</span>
-<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">protocol</span><span class="p">;</span><span class="w">  </span><span class="cm">/* &quot;TCP&quot; o &quot;UDP&quot; */</span>
-<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">server_ip</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Dirección IP del servidor */</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">port</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Puerto de escucha o conexión */</span>
-<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">mode</span><span class="p">;</span><span class="w">      </span><span class="cm">/* &quot;client&quot; o &quot;server&quot; */</span>
-<span class="p">};</span>
-</pre></div>
-</div>
-</section>
-<section id="logica-del-servidor">
-<h2>Lógica del Servidor<a class="headerlink" href="#logica-del-servidor" title="Link to this heading"></a></h2>
-<p>El servidor crea un socket (STREAM para TCP, DGRAM para UDP), lo vincula al puerto especificado y entra en un bucle infinito.
-*   En <strong>TCP</strong>, acepta una conexión, procesa mensajes en un bucle interno hasta recibir <code class="docutils literal notranslate"><span class="pre">EXIT</span></code> o error, y luego cierra el socket cliente para volver a aceptar otro.
-*   En <strong>UDP</strong>, recibe paquetes individuales y responde a la dirección de origen.</p>
-</section>
-<section id="logica-del-cliente">
-<h2>Lógica del Cliente<a class="headerlink" href="#logica-del-cliente" title="Link to this heading"></a></h2>
-<p>El cliente lee entradas del usuario desde <code class="docutils literal notranslate"><span class="pre">stdin</span></code>.
-*   Envía la cadena ingresada al servidor.
-*   Espera la respuesta (bloqueante).
-*   Imprime la respuesta.
-*   Si el usuario escribe <code class="docutils literal notranslate"><span class="pre">EXIT</span></code>, envía el comando para notificar al servidor y termina la ejecución.</p>
-</section>
+<section id="solucion-de-problemas">
+<h1>Solución de Problemas<a class="headerlink" href="#solucion-de-problemas" title="Link to this heading"></a></h1>
+<p><strong>1. El ESP32 no obtiene dirección IP</strong>
+*   Verifique que el servidor DHCP en el PC esté corriendo (<cite>ps aux | grep python</cite>).
+*   Asegúrese de que el cable Ethernet esté conectado o la red Wi-Fi configurada correctamente.
+*   Intente asignar una IP estática manualmente: <cite>ifconfig eth0 192.168.50.2</cite>.</p>
+<p><strong>2. No hay conexión entre PC y ESP32 (Ping falla)</strong>
+*   Verifique el firewall del PC (<cite>sudo iptables -L</cite>). Asegúrese de que se permitan conexiones entrantes en el puerto 3001.
+*   Compruebe que ambos dispositivos están en la misma subred.</p>
+<p><strong>3. Error «Connection refused»</strong>
+*   Asegúrese de que el servidor (ya sea en PC o ESP32) esté ejecutándose <em>antes</em> de iniciar el cliente.
+*   Verifique que el puerto 3001 no esté siendo usado por otra aplicación.</p>
 </section>
 <section id="documentacion-de-la-api-codigo-fuente">
 <h1>Documentación de la API (Código Fuente)<a class="headerlink" href="#documentacion-de-la-api-codigo-fuente" title="Link to this heading"></a></h1>
 <section id="aplicacion-pc-lab01-pc-c">
 <h2>Aplicación PC (lab01_pc.c)<a class="headerlink" href="#aplicacion-pc-lab01-pc-c" title="Link to this heading"></a></h2>
-<p>Este archivo contiene la lógica para el cliente/servidor que se ejecuta en el host (Linux).</p>
+<p>Este archivo contiene la lógica para el cliente/servidor que se ejecuta en el host (Linux).
+Incluye funciones para manejo de sockets BSD estándar y parsing de argumentos.</p>
+<p>Aplicación de contraparte para PC (Linux) del Laboratorio 01. </p>
+<p>Este programa actúa como Cliente o Servidor TCP/UDP para probar la conectividad y funcionalidad de la aplicación corriendo en el ESP32 con NuttX.</p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>AndoniXXR </p>
+</dd>
+<dt><strong>Date</strong></dt><dd><p>2025 </p>
+</dd>
+</dl>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.BUFFER_SIZE">
 <span class="target" id="lab01__pc_8c_1a6b20d41d6252e9871430c242cb1a56e7"></span><span class="sig-name descname"><span class="n"><span class="pre">BUFFER_SIZE</span></span></span><a class="headerlink" href="#c.BUFFER_SIZE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Tamaño del buffer para envío y recepción de mensajes. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -273,55 +298,170 @@ nsh&gt;<span class="w"> </span>lab01<span class="w"> </span>client<span class="w
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv413get_timestampPc6size_t">
 <span id="_CPPv313get_timestampPc6size_t"></span><span id="_CPPv213get_timestampPc6size_t"></span><span id="get_timestamp__cP.s"></span><span class="target" id="lab01__pc_8c_1a36bf384c71c903a6b7344ab23289c833"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_timestamp</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413get_timestampPc6size_t" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Obtiene la fecha y hora actual formateada. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>buffer</strong> – Buffer donde se escribirá la cadena de tiempo. </p></li>
+<li><p><strong>size</strong> – Tamaño del buffer. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv47log_msgPKcPKcPKcPKcPKc">
 <span id="_CPPv37log_msgPKcPKcPKcPKcPKc"></span><span id="_CPPv27log_msgPKcPKcPKcPKcPKc"></span><span id="log_msg__cCP.cCP.cCP.cCP.cCP"></span><span class="target" id="lab01__pc_8c_1aefedc7641797b5e8882f09f28952b6fb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">log_msg</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">direction</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">host</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">socket_type</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">protocol</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">description</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47log_msgPKcPKcPKcPKcPKc" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Imprime un mensaje de log con marca de tiempo en la consola. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>direction</strong> – Dirección del mensaje («&gt;» enviado, «&lt;» recibido). </p></li>
+<li><p><strong>host</strong> – Host remoto o local. </p></li>
+<li><p><strong>socket_type</strong> – Tipo de socket («client» o «server»). </p></li>
+<li><p><strong>protocol</strong> – Protocolo usado («TCP» o «UDP»). </p></li>
+<li><p><strong>description</strong> – Contenido del mensaje o descripción del evento. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv410parse_argsiA_PcP6args_s">
-<span id="_CPPv310parse_argsiA_PcP6args_s"></span><span id="_CPPv210parse_argsiA_PcP6args_s"></span><span id="parse_args__i.cPA.args_sP"></span><span class="target" id="lab01__pc_8c_1a5f9295e395e579e1fc50947bf1048e22"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse_args</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argc</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">argv</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46args_s" title="args_s"><span class="n"><span class="pre">args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410parse_argsiA_PcP6args_s" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv410parse_argsiA_PcP9pc_args_s">
+<span id="_CPPv310parse_argsiA_PcP9pc_args_s"></span><span id="_CPPv210parse_argsiA_PcP9pc_args_s"></span><span id="parse_args__i.cPA.pc_args_sP"></span><span class="target" id="lab01__pc_8c_1acd63eb498bf4ce087ca0eed874216605"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse_args</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argc</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">argv</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv49pc_args_s" title="pc_args_s"><span class="n"><span class="pre">pc_args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410parse_argsiA_PcP9pc_args_s" title="Link to this definition"></a><br /></dt>
+<dd><p>Parsea los argumentos de la línea de comandos. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>argc</strong> – Número de argumentos. </p></li>
+<li><p><strong>argv</strong> – Array de argumentos. </p></li>
+<li><p><strong>args</strong> – Puntero a la estructura donde se guardarán los resultados. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 si tiene éxito, -1 si faltan argumentos obligatorios. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv49calculatePKcPc">
 <span id="_CPPv39calculatePKcPc"></span><span id="_CPPv29calculatePKcPc"></span><span id="calculate__cCP.cP"></span><span class="target" id="lab01__pc_8c_1a01f79c6335ada63ed04bbb8d154ec4d8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">calculate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">input</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">output</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49calculatePKcPc" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Realiza una operación matemática básica basada en una cadena de entrada. </p>
+<p>Soporta operaciones: +, -, *, /, %.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> – Cadena de entrada (ej. «5+3»). </p></li>
+<li><p><strong>output</strong> – Buffer donde se escribirá el resultado o mensaje de error. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv410run_clientP6args_s">
-<span id="_CPPv310run_clientP6args_s"></span><span id="_CPPv210run_clientP6args_s"></span><span id="run_client__args_sP"></span><span class="target" id="lab01__pc_8c_1a5e4abda72cda3552ed756ae31c075a20"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run_client</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46args_s" title="args_s"><span class="n"><span class="pre">args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410run_clientP6args_s" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv410run_clientP9pc_args_s">
+<span id="_CPPv310run_clientP9pc_args_s"></span><span id="_CPPv210run_clientP9pc_args_s"></span><span id="run_client__pc_args_sP"></span><span class="target" id="lab01__pc_8c_1a821d0f36776e1476f623d3ca8eb7f30b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run_client</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv49pc_args_s" title="pc_args_s"><span class="n"><span class="pre">pc_args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410run_clientP9pc_args_s" title="Link to this definition"></a><br /></dt>
+<dd><p>Ejecuta la lógica del cliente. </p>
+<p>Se conecta al servidor (TCP) o prepara el socket (UDP), lee de stdin y envía los comandos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – Argumentos de configuración. </p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 en éxito, 1 en error. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv410run_serverP6args_s">
-<span id="_CPPv310run_serverP6args_s"></span><span id="_CPPv210run_serverP6args_s"></span><span id="run_server__args_sP"></span><span class="target" id="lab01__pc_8c_1a5942e093dcb6176c58b1eddb6067a1c7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run_server</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46args_s" title="args_s"><span class="n"><span class="pre">args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410run_serverP6args_s" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv410run_serverP9pc_args_s">
+<span id="_CPPv310run_serverP9pc_args_s"></span><span id="_CPPv210run_serverP9pc_args_s"></span><span id="run_server__pc_args_sP"></span><span class="target" id="lab01__pc_8c_1a4ac24defc1069b8e26937a2851531d42"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run_server</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv49pc_args_s" title="pc_args_s"><span class="n"><span class="pre">pc_args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410run_serverP9pc_args_s" title="Link to this definition"></a><br /></dt>
+<dd><p>Ejecuta la lógica del servidor. </p>
+<p>Escucha en el puerto especificado y procesa las peticiones de cálculo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – Argumentos de configuración. </p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 en éxito, 1 en error. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv44mainiA_Pc">
 <span id="_CPPv34mainiA_Pc"></span><span id="_CPPv24mainiA_Pc"></span><span id="main__i.cPA"></span><span class="target" id="lab01__pc_8c_1a0ddf1224851353fc92bfbff6f499fa97"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">main</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argc</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">argv</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv44mainiA_Pc" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Punto de entrada principal de la aplicación PC. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>argc</strong> – Número de argumentos. </p></li>
+<li><p><strong>argv</strong> – Array de argumentos. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 en éxito, 1 en error. </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv46args_s">
-<span id="_CPPv36args_s"></span><span id="_CPPv26args_s"></span><span id="args_s"></span><span class="target" id="structargs__s"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">args_s</span></span></span><a class="headerlink" href="#_CPPv46args_s" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv49pc_args_s">
+<span id="_CPPv39pc_args_s"></span><span id="_CPPv29pc_args_s"></span><span id="pc_args_s"></span><span class="target" id="structpc__args__s"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pc_args_s</span></span></span><a class="headerlink" href="#_CPPv49pc_args_s" title="Link to this definition"></a><br /></dt>
+<dd><p>Estructura para almacenar los argumentos de línea de comandos. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9pc_args_s8protocolE">
+<span id="_CPPv3N9pc_args_s8protocolE"></span><span id="_CPPv2N9pc_args_s8protocolE"></span><span id="pc_args_s::protocol__cP"></span><span class="target" id="structpc__args__s_1a70955e4f672cca60ddae115d49cc201d"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">protocol</span></span></span><a class="headerlink" href="#_CPPv4N9pc_args_s8protocolE" title="Link to this definition"></a><br /></dt>
+<dd><p>Protocolo a utilizar: «TCP» o «UDP». </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9pc_args_s9server_ipE">
+<span id="_CPPv3N9pc_args_s9server_ipE"></span><span id="_CPPv2N9pc_args_s9server_ipE"></span><span id="pc_args_s::server_ip__cP"></span><span class="target" id="structpc__args__s_1ae7b660d9e2b5820aecf59cd7bbbbab3a"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">server_ip</span></span></span><a class="headerlink" href="#_CPPv4N9pc_args_s9server_ipE" title="Link to this definition"></a><br /></dt>
+<dd><p>Dirección IP del servidor al que conectarse (modo cliente). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9pc_args_s4portE">
+<span id="_CPPv3N9pc_args_s4portE"></span><span id="_CPPv2N9pc_args_s4portE"></span><span id="pc_args_s::port__i"></span><span class="target" id="structpc__args__s_1ac8e8dd439c30dfca2bd51951cf2e2f2f"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">port</span></span></span><a class="headerlink" href="#_CPPv4N9pc_args_s4portE" title="Link to this definition"></a><br /></dt>
+<dd><p>Puerto de conexión o escucha. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9pc_args_s4modeE">
+<span id="_CPPv3N9pc_args_s4modeE"></span><span id="_CPPv2N9pc_args_s4modeE"></span><span id="pc_args_s::mode__cP"></span><span class="target" id="structpc__args__s_1acbc9344a12aa276e295251bf1b3e625b"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">mode</span></span></span><a class="headerlink" href="#_CPPv4N9pc_args_s4modeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Modo de operación: «client» o «server». </p>
+</dd></dl>
+
+</div>
+</dd></dl>
 
 </section>
 <section id="aplicacion-esp32-lab01-main-c">
 <h2>Aplicación ESP32 (lab01_main.c)<a class="headerlink" href="#aplicacion-esp32-lab01-main-c" title="Link to this heading"></a></h2>
 <p>Este archivo contiene la lógica principal de la aplicación NuttX.
-Se registra como una aplicación del sistema en NuttX y se invoca desde NSH.</p>
+Se registra como una aplicación del sistema en NuttX y se invoca desde NSH.
+Utiliza la API de sockets compatible con POSIX de NuttX.</p>
+<p>Aplicación principal para NuttX (ESP32) del Laboratorio 01. </p>
+<p>Este programa implementa un cliente/servidor TCP/UDP que corre sobre NuttX. Permite realizar operaciones matemáticas simples enviadas desde un cliente o procesarlas si actúa como servidor.</p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>AndoniXXR </p>
+</dd>
+<dt><strong>Date</strong></dt><dd><p>2025 </p>
+</dd>
+</dl>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
 <dl class="cpp macro">
 <dt class="sig sig-object cpp">
 <span class="target" id="lab01__main_8c_1a6b20d41d6252e9871430c242cb1a56e7"></span><span class="sig-name descname"><span class="n"><span class="pre">BUFFER_SIZE</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>Tamaño del buffer para envío y recepción de mensajes. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -329,63 +469,141 @@ Se registra como una aplicación del sistema en NuttX y se invoca desde NSH.</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp">
 <span class="target" id="lab01__main_8c_1a36bf384c71c903a6b7344ab23289c833"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_timestamp</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>Obtiene la fecha y hora actual formateada. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>buffer</strong> – Buffer donde se escribirá la cadena de tiempo. </p></li>
+<li><p><strong>size</strong> – Tamaño del buffer. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp">
 <span class="target" id="lab01__main_8c_1aefedc7641797b5e8882f09f28952b6fb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">log_msg</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">direction</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">host</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">socket_type</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">protocol</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">description</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>Imprime un mensaje de log con marca de tiempo en la consola (NSH). </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>direction</strong> – Dirección del mensaje («&gt;» enviado, «&lt;» recibido). </p></li>
+<li><p><strong>host</strong> – Host remoto o local. </p></li>
+<li><p><strong>socket_type</strong> – Tipo de socket («client» o «server»). </p></li>
+<li><p><strong>protocol</strong> – Protocolo usado («TCP» o «UDP»). </p></li>
+<li><p><strong>description</strong> – Contenido del mensaje o descripción del evento. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="lab01__main_8c_1a5f9295e395e579e1fc50947bf1048e22"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse_args</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argc</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">argv</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46args_s" title="args_s"><span class="n"><span class="pre">args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv410parse_argsiA_PcP6args_s">
+<span id="_CPPv310parse_argsiA_PcP6args_s"></span><span id="_CPPv210parse_argsiA_PcP6args_s"></span><span id="parse_args__i.cPA.args_sP"></span><span class="target" id="lab01__main_8c_1a5f9295e395e579e1fc50947bf1048e22"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse_args</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argc</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">argv</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46args_s" title="args_s"><span class="n"><span class="pre">args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Parsea los argumentos de la línea de comandos de NuttX. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>argc</strong> – Número de argumentos. </p></li>
+<li><p><strong>argv</strong> – Array de argumentos. </p></li>
+<li><p><strong>args</strong> – Puntero a la estructura donde se guardarán los resultados. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 si tiene éxito, -1 si faltan argumentos obligatorios. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp">
 <span class="target" id="lab01__main_8c_1a01f79c6335ada63ed04bbb8d154ec4d8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">calculate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">input</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">output</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>Realiza una operación matemática básica. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> – Cadena de entrada (ej. «5+3»). </p></li>
+<li><p><strong>output</strong> – Buffer donde se escribirá el resultado. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="lab01__main_8c_1a5e4abda72cda3552ed756ae31c075a20"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run_client</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46args_s" title="args_s"><span class="n"><span class="pre">args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv410run_clientP6args_s">
+<span id="_CPPv310run_clientP6args_s"></span><span id="_CPPv210run_clientP6args_s"></span><span id="run_client__args_sP"></span><span class="target" id="lab01__main_8c_1a5e4abda72cda3552ed756ae31c075a20"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run_client</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46args_s" title="args_s"><span class="n"><span class="pre">args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Ejecuta la lógica del cliente en NuttX. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – Argumentos de configuración. </p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 en éxito, 1 en error. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="lab01__main_8c_1a5942e093dcb6176c58b1eddb6067a1c7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run_server</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46args_s" title="args_s"><span class="n"><span class="pre">args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv410run_serverP6args_s">
+<span id="_CPPv310run_serverP6args_s"></span><span id="_CPPv210run_serverP6args_s"></span><span id="run_server__args_sP"></span><span class="target" id="lab01__main_8c_1a5942e093dcb6176c58b1eddb6067a1c7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run_server</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46args_s" title="args_s"><span class="n"><span class="pre">args_s</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Ejecuta la lógica del servidor en NuttX. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – Argumentos de configuración. </p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 en éxito, 1 en error. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp">
 <span class="target" id="lab01__main_8c_1a973aee1ab00407ba2ef7669bf1781067"></span><span class="sig-name descname"><span class="pre">int</span> <span class="pre">main</span> <span class="pre">(int</span> <span class="pre">argc,</span> <span class="pre">FAR</span> <span class="pre">char</span> <span class="pre">*argv[])</span></span></dt>
-<dd></dd></dl>
+<dd><p>Punto de entrada principal de la aplicación NuttX. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>argc</strong> – Número de argumentos. </p></li>
+<li><p><strong>argv</strong> – Array de argumentos. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 en éxito, 1 en error. </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp">
-<span class="target" id="structargs__s"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">args_s</span></span></span><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dt class="sig sig-object cpp" id="_CPPv46args_s">
+<span id="_CPPv36args_s"></span><span id="_CPPv26args_s"></span><span id="args_s"></span><span class="target" id="structargs__s"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">args_s</span></span></span><a class="headerlink" href="#_CPPv46args_s" title="Link to this definition"></a><br /></dt>
+<dd><p>Estructura para almacenar los argumentos de línea de comandos en NuttX. </p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6args_s8protocolE">
-<span id="_CPPv3N6args_s8protocolE"></span><span id="_CPPv2N6args_s8protocolE"></span><span id="args_s::protocol__cP"></span><span class="target" id="structargs__s_1ad9d80f97d351c04d31c620058f91e0aa"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">protocol</span></span></span><a class="headerlink" href="#_CPPv4N6args_s8protocolE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N6args_s8protocolE"></span><span id="_CPPv2N6args_s8protocolE"></span><span id="args_s::protocol__cP"></span><span class="target" id="structargs__s_1a06ef1584363dc040e755ada55b81ee3f"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">protocol</span></span></span><a class="headerlink" href="#_CPPv4N6args_s8protocolE" title="Link to this definition"></a><br /></dt>
+<dd><p>Protocolo a utilizar: «TCP» o «UDP». </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6args_s9server_ipE">
-<span id="_CPPv3N6args_s9server_ipE"></span><span id="_CPPv2N6args_s9server_ipE"></span><span id="args_s::server_ip__cP"></span><span class="target" id="structargs__s_1ae89ac4e77601e4a29862aef7faf16d53"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">server_ip</span></span></span><a class="headerlink" href="#_CPPv4N6args_s9server_ipE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N6args_s9server_ipE"></span><span id="_CPPv2N6args_s9server_ipE"></span><span id="args_s::server_ip__cP"></span><span class="target" id="structargs__s_1ae64d0790ff57bf9a5b4d4f0900a26602"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">server_ip</span></span></span><a class="headerlink" href="#_CPPv4N6args_s9server_ipE" title="Link to this definition"></a><br /></dt>
+<dd><p>Dirección IP del servidor al que conectarse (modo cliente). </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6args_s4portE">
 <span id="_CPPv3N6args_s4portE"></span><span id="_CPPv2N6args_s4portE"></span><span id="args_s::port__i"></span><span class="target" id="structargs__s_1a3d58a152d2ec4ff20294a33bf8ced027"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">port</span></span></span><a class="headerlink" href="#_CPPv4N6args_s4portE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Puerto de conexión o escucha. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6args_s4modeE">
-<span id="_CPPv3N6args_s4modeE"></span><span id="_CPPv2N6args_s4modeE"></span><span id="args_s::mode__cP"></span><span class="target" id="structargs__s_1a4f256e360249fe41ac45a29bdd4a788b"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">mode</span></span></span><a class="headerlink" href="#_CPPv4N6args_s4modeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N6args_s4modeE"></span><span id="_CPPv2N6args_s4modeE"></span><span id="args_s::mode__cP"></span><span class="target" id="structargs__s_1a092ff23e3c433f829ebd4e8f5ac2cfd8"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">mode</span></span></span><a class="headerlink" href="#_CPPv4N6args_s4modeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Modo de operación: «client» o «server». </p>
+</dd></dl>
 
 </div>
 </dd></dl>

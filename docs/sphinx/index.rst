@@ -10,6 +10,27 @@ Introducción
 Esta es la documentación técnica generada automáticamente para el proyecto de portabilidad de Laboratorio 01 a NuttX en ESP32.
 El proyecto consiste en una aplicación cliente/servidor TCP/UDP que se ejecuta en el microcontrolador ESP32 y se comunica con una contraparte en PC.
 
+Arquitectura del Sistema
+========================
+El sistema se compone de dos nodos principales que se comunican a través de una red TCP/IP.
+
+.. code-block:: text
+
+    +-------------------+           (WiFi / Ethernet)           +-------------------+
+    |   PC Host (Linux) | <-----------------------------------> |   ESP32 (NuttX)   |
+    |                   |                                       |                   |
+    |  [ lab01_pc ]     |           TCP/UDP Port 3001           |  [ lab01 app ]    |
+    |  - Cliente        |                                       |  - Cliente        |
+    |  - Servidor       |                                       |  - Servidor       |
+    |                   |                                       |                   |
+    |  [ Gateway ]      |                                       |  [ NSH Shell ]    |
+    |  - DHCP Server    |                                       |  - ifconfig       |
+    |  - NAT / Routing  |                                       |  - ping           |
+    +-------------------+                                       +-------------------+
+
+*   **PC Host**: Actúa como la estación de desarrollo y también como Gateway de red. Ejecuta la versión Linux de la aplicación (`lab01_pc`) para pruebas de integración.
+*   **ESP32**: Ejecuta el RTOS NuttX. La aplicación `lab01` está integrada en el sistema operativo y se lanza desde la consola NSH.
+
 Descripción del Proyecto
 ------------------------
 El objetivo de este laboratorio es demostrar la capacidad del sistema operativo NuttX ejecutándose en un SoC ESP32 para manejar comunicaciones de red estándar (TCP/IP).
@@ -115,36 +136,21 @@ Primero compila la aplicación de contraparte:
 
        ./lab01_pc client tcp 3001 <IP_DEL_ESP32>
 
-Detalles de Implementación
-==========================
+Solución de Problemas
+=====================
 
-Estructura de Argumentos
-------------------------
-Tanto la aplicación de NuttX como la de PC utilizan una estructura común para manejar los argumentos de línea de comandos:
+**1. El ESP32 no obtiene dirección IP**
+*   Verifique que el servidor DHCP en el PC esté corriendo (`ps aux | grep python`).
+*   Asegúrese de que el cable Ethernet esté conectado o la red Wi-Fi configurada correctamente.
+*   Intente asignar una IP estática manualmente: `ifconfig eth0 192.168.50.2`.
 
-.. code-block:: c
+**2. No hay conexión entre PC y ESP32 (Ping falla)**
+*   Verifique el firewall del PC (`sudo iptables -L`). Asegúrese de que se permitan conexiones entrantes en el puerto 3001.
+*   Compruebe que ambos dispositivos están en la misma subred.
 
-   struct args_s
-   {
-     char *protocol;  /* "TCP" o "UDP" */
-     char *server_ip; /* Dirección IP del servidor */
-     int port;        /* Puerto de escucha o conexión */
-     char *mode;      /* "client" o "server" */
-   };
-
-Lógica del Servidor
--------------------
-El servidor crea un socket (STREAM para TCP, DGRAM para UDP), lo vincula al puerto especificado y entra en un bucle infinito.
-*   En **TCP**, acepta una conexión, procesa mensajes en un bucle interno hasta recibir ``EXIT`` o error, y luego cierra el socket cliente para volver a aceptar otro.
-*   En **UDP**, recibe paquetes individuales y responde a la dirección de origen.
-
-Lógica del Cliente
-------------------
-El cliente lee entradas del usuario desde ``stdin``.
-*   Envía la cadena ingresada al servidor.
-*   Espera la respuesta (bloqueante).
-*   Imprime la respuesta.
-*   Si el usuario escribe ``EXIT``, envía el comando para notificar al servidor y termina la ejecución.
+**3. Error "Connection refused"**
+*   Asegúrese de que el servidor (ya sea en PC o ESP32) esté ejecutándose *antes* de iniciar el cliente.
+*   Verifique que el puerto 3001 no esté siendo usado por otra aplicación.
 
 Documentación de la API (Código Fuente)
 =======================================
@@ -152,6 +158,7 @@ Documentación de la API (Código Fuente)
 Aplicación PC (lab01_pc.c)
 --------------------------
 Este archivo contiene la lógica para el cliente/servidor que se ejecuta en el host (Linux).
+Incluye funciones para manejo de sockets BSD estándar y parsing de argumentos.
 
 .. doxygenfile:: lab01_pc.c
    :project: NuttX ESP32 Lab01
@@ -160,6 +167,7 @@ Aplicación ESP32 (lab01_main.c)
 -------------------------------
 Este archivo contiene la lógica principal de la aplicación NuttX.
 Se registra como una aplicación del sistema en NuttX y se invoca desde NSH.
+Utiliza la API de sockets compatible con POSIX de NuttX.
 
 .. doxygenfile:: lab01_main.c
    :project: NuttX ESP32 Lab01
